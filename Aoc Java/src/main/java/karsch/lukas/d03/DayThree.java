@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 
 public class DayThree implements AocSolver {
     private final List<String> input;
-
     private final Map<Symbol, List<Number>> numberToSymbol = new HashMap<>();
 
     public DayThree(Stream<String> input) {

@@ -2,6 +2,7 @@ package karsch.lukas;
 
 import karsch.lukas.d02.DayTwo;
 import karsch.lukas.d03.DayThree;
+import karsch.lukas.d04.DayFour;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ public class AocRunner {
         return switch (day) {
             case 2 -> new DayTwo(input);
             case 3 -> new DayThree(input);
+            case 4 -> new DayFour(input);
             default -> throw new IllegalArgumentException("Day " + day + " not implemented");
         };
     }
