@@ -17,6 +17,7 @@ public class DayTwo implements AocSolver {
         this.input = input.toList();
     }
 
+    @Override
     public void solve() {
         partOne(input);
         partTwo(input);
