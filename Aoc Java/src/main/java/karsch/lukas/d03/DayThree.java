@@ -66,10 +66,14 @@ public class DayThree implements AocSolver {
         int sum = numberToSymbol.keySet().stream()
                 .filter(symbol -> symbol.value() == '*')
                 .filter(gear -> numberToSymbol.get(gear).size() == 2)
-                .map(gear -> {
-                    var nums = numberToSymbol.get(gear);
-                    return nums.get(0).value() * nums.get(1).value();
-                })
+                .map(gear ->
+                        numberToSymbol.get(gear).stream()
+                                .reduce(
+                                        1,
+                                        (curr, number) -> curr * number.value(),
+                                        Integer::sum
+                                )
+                )
                 .reduce(0, Integer::sum);
         System.out.println("*************************************");
         System.out.println("Total sum of gear ratios: " + sum);
@@ -77,14 +81,12 @@ public class DayThree implements AocSolver {
 
     private Symbol getAdjacentSymbol(int lineIndex, int start, int end) {
         Symbol symbolLeft = symbolLeft(lineIndex, start);
-        Symbol symbolRight = hasSymbolRight(lineIndex, end);
-        Symbol symbolBottomAndDiagonal = hasSymbolBottomAndDiagonal(lineIndex, start, end);
-        Symbol symbolTopAndDiagonal = hasSymbolTopAndDiagonal(lineIndex, start, end);
         if (symbolLeft != null) return symbolLeft;
-        else if (symbolRight != null) return symbolRight;
-        else if (symbolBottomAndDiagonal != null) return symbolBottomAndDiagonal;
-        else if (symbolTopAndDiagonal != null) return symbolTopAndDiagonal;
-        return null;
+        Symbol symbolRight = hasSymbolRight(lineIndex, end);
+        if (symbolRight != null) return symbolRight;
+        Symbol symbolBottomAndDiagonal = hasSymbolBottomAndDiagonal(lineIndex, start, end);
+        if (symbolBottomAndDiagonal != null) return symbolBottomAndDiagonal;
+        return hasSymbolTopAndDiagonal(lineIndex, start, end);
     }
 
     private Symbol hasSymbolRight(int lineIndex, int end) {
