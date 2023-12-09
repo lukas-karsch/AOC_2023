@@ -24,25 +24,20 @@ public class DayThree implements AocSolver {
             String line = input.get(lineIndex);
             int numStart = -1, numEnd = -1;
             for (int i = 0; i < line.length(); i++) {
-                char c = line.charAt(i);
-                if(numStart == -1 && Character.isDigit(c)) {
+                final char c = line.charAt(i);
+                if (numStart == -1 && Character.isDigit(c)) {
                     numStart = i;
+                } else if (numStart != -1) {
+                    if (!Character.isDigit(c)) numEnd = i - 1;
+                    else if (i == line.length() - 1) numEnd = i;
                 }
-                else if(numStart != -1) {
-                    if(!Character.isDigit(c)) numEnd = i - 1;
-                    else if(i == line.length() -1) numEnd = i;
-                }
-                if(numStart != -1 && numEnd != -1) {
+                if (numStart != -1 && numEnd != -1) {
                     System.out.print("   Digit found from index " + numStart + " to " + numEnd);
                     boolean hasAdjacentSymbol = hasAdjacentSymbol(lineIndex, numStart, numEnd);
-                    if(hasAdjacentSymbol) {
-                        StringBuilder digitBuilder = new StringBuilder();
-                        for (int j = numStart; j <= numEnd; j++) {
-                            digitBuilder.append(line.charAt(j));
-                        }
-                        String digit = digitBuilder.toString();
+                    if (hasAdjacentSymbol) {
+                        int digit = buildDigit(line, numStart, numEnd);
                         System.out.print(" (digit " + digit + " has adjacent symbol)");
-                        sum += Integer.parseInt(digit);
+                        sum += digit;
                     }
                     System.out.println();
                     numStart = -1;
@@ -50,41 +45,50 @@ public class DayThree implements AocSolver {
                 }
             }
         }
+        System.out.println("*************************************");
         System.out.println("Total sum of engine part numbers: " + sum);
     }
 
     private boolean hasAdjacentSymbol(int lineIndex, int start, int end) {
-        return symbolLeft(lineIndex, start, end)
-                || hasSymbolRight(lineIndex, start, end)
+        return symbolLeft(lineIndex, start)
+                || hasSymbolRight(lineIndex, end)
                 || hasSymbolBottomAndDiagonal(lineIndex, start, end)
                 || hasSymbolTopAndDiagonal(lineIndex, start, end);
     }
 
-    private boolean hasSymbolRight(int lineIndex, int start, int end) {
-        if(end == input.get(0).length() - 1) return false;
+    private boolean hasSymbolRight(int lineIndex, int end) {
+        if (end == input.get(0).length() - 1) return false;
         return input.get(lineIndex).charAt(end + 1) != '.';
     }
 
-    private boolean symbolLeft(int lineIndex, int start, int end) {
-        if(start == 0) return false;
+    private boolean symbolLeft(int lineIndex, int start) {
+        if (start == 0) return false;
         return input.get(lineIndex).charAt(start - 1) != '.';
     }
 
     private boolean hasSymbolTopAndDiagonal(int lineIndex, int start, int end) {
-        if(lineIndex == 0) return false;
-        String lineAbove = input.get(lineIndex -1);
-        for(int i = Math.max(0, start - 1); i <= Math.min(lineAbove.length() - 1, end + 1); i++) {
-            if(lineAbove.charAt(i) != '.') return true;
+        if (lineIndex == 0) return false;
+        String lineAbove = input.get(lineIndex - 1);
+        for (int i = Math.max(0, start - 1); i <= Math.min(lineAbove.length() - 1, end + 1); i++) {
+            if (lineAbove.charAt(i) != '.') return true;
         }
         return false;
     }
 
     private boolean hasSymbolBottomAndDiagonal(int lineIndex, int start, int end) {
-        if(lineIndex == input.size() -1) return false;
+        if (lineIndex == input.size() - 1) return false;
         String lineBelow = input.get(lineIndex + 1);
-        for(int i = Math.max(0, start - 1); i <= Math.min(lineBelow.length() - 1, end + 1); i++) {
-            if(lineBelow.charAt(i) != '.') return true;
+        for (int i = Math.max(0, start - 1); i <= Math.min(lineBelow.length() - 1, end + 1); i++) {
+            if (lineBelow.charAt(i) != '.') return true;
         }
         return false;
+    }
+
+    private int buildDigit(String line, int start, int end) {
+        StringBuilder digitBuilder = new StringBuilder();
+        for (int j = start; j <= end; j++) {
+            digitBuilder.append(line.charAt(j));
+        }
+        return Integer.parseInt(digitBuilder.toString());
     }
 }
