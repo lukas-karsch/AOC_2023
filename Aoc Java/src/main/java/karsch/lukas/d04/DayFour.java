@@ -19,6 +19,7 @@ public class DayFour implements AocSolver {
     @Override
     public void solve() {
         partOne();
+        partTwo();
     }
 
     private void partOne() {
@@ -31,19 +32,29 @@ public class DayFour implements AocSolver {
                 .map(content -> {
                     String[] split = content.split("\\|");
                     var winning = getNumbers(split[0]);
-
-                    int lineValue = 0;
                     var ownNumbers = getNumbers(split[1]);
+
                     ownNumbers.retainAll(winning);
-                    if(!ownNumbers.isEmpty()) {
-                        lineValue = (int) Math.pow(2, ownNumbers.size() - 1);
-                    }
+                    int lineValue = getLineValue(ownNumbers);
                     System.out.format(" is worth %d points%n", lineValue);
                     return lineValue;
                 })
                 .reduce(0, Integer::sum);
 
+        System.out.println("***************************");
         System.out.format("Sum of card values is %d%n", sum);
+    }
+
+    private int getLineValue(Set<Integer> retainedNumbers) {
+        int lineValue = 0;
+        if(!retainedNumbers.isEmpty()) {
+            lineValue = (int) Math.pow(2, retainedNumbers.size() - 1);
+        }
+        return lineValue;
+    }
+
+    private void partTwo() {
+
     }
 
     private Set<Integer> getNumbers(String nums) {
