@@ -2,11 +2,16 @@ package karsch.lukas.d03;
 
 import karsch.lukas.AocSolver;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class DayThree implements AocSolver {
     private final List<String> input;
+
+    private final Map<Symbol, List<Number>> numberToSymbol = new HashMap<>();
 
     public DayThree(Stream<String> input) {
         this.input = input.toList();
@@ -15,6 +20,7 @@ public class DayThree implements AocSolver {
     @Override
     public void solve() {
         partOne();
+        partTwo();
     }
 
     private void partOne() {
@@ -33,11 +39,18 @@ public class DayThree implements AocSolver {
                 }
                 if (numStart != -1 && numEnd != -1) {
                     System.out.print("   Digit found from index " + numStart + " to " + numEnd);
-                    boolean hasAdjacentSymbol = hasAdjacentSymbol(lineIndex, numStart, numEnd);
-                    if (hasAdjacentSymbol) {
+                    Symbol adjacentSymbol = getAdjacentSymbol(lineIndex, numStart, numEnd);
+                    if (adjacentSymbol != null) {
                         int digit = buildDigit(line, numStart, numEnd);
                         System.out.print(" (digit " + digit + " has adjacent symbol)");
                         sum += digit;
+                        Number number = new Number(digit, lineIndex, numStart, numEnd);
+                        var currentValue = numberToSymbol.getOrDefault(adjacentSymbol, new ArrayList<>());
+                        currentValue.add(number);
+                        numberToSymbol.put(
+                                adjacentSymbol,
+                                currentValue
+                        );
                     }
                     System.out.println();
                     numStart = -1;
@@ -49,39 +62,73 @@ public class DayThree implements AocSolver {
         System.out.println("Total sum of engine part numbers: " + sum);
     }
 
-    private boolean hasAdjacentSymbol(int lineIndex, int start, int end) {
-        return symbolLeft(lineIndex, start)
-                || hasSymbolRight(lineIndex, end)
-                || hasSymbolBottomAndDiagonal(lineIndex, start, end)
-                || hasSymbolTopAndDiagonal(lineIndex, start, end);
+    private void partTwo() {
+        int sum = numberToSymbol.keySet().stream()
+                .filter(symbol -> symbol.value() == '*')
+                .filter(gear -> numberToSymbol.get(gear).size() == 2)
+                .map(gear -> {
+                    var nums = numberToSymbol.get(gear);
+                    return nums.get(0).value() * nums.get(1).value();
+                })
+                .reduce(0, Integer::sum);
+        System.out.println("*************************************");
+        System.out.println("Total sum of gear ratios: " + sum);
     }
 
-    private boolean hasSymbolRight(int lineIndex, int end) {
-        if (end == input.get(0).length() - 1) return false;
-        return input.get(lineIndex).charAt(end + 1) != '.';
+    private Symbol getAdjacentSymbol(int lineIndex, int start, int end) {
+        Symbol symbolLeft = symbolLeft(lineIndex, start);
+        Symbol symbolRight = hasSymbolRight(lineIndex, end);
+        Symbol symbolBottomAndDiagonal = hasSymbolBottomAndDiagonal(lineIndex, start, end);
+        Symbol symbolTopAndDiagonal = hasSymbolTopAndDiagonal(lineIndex, start, end);
+        if (symbolLeft != null) return symbolLeft;
+        else if (symbolRight != null) return symbolRight;
+        else if (symbolBottomAndDiagonal != null) return symbolBottomAndDiagonal;
+        else if (symbolTopAndDiagonal != null) return symbolTopAndDiagonal;
+        return null;
     }
 
-    private boolean symbolLeft(int lineIndex, int start) {
-        if (start == 0) return false;
-        return input.get(lineIndex).charAt(start - 1) != '.';
+    private Symbol hasSymbolRight(int lineIndex, int end) {
+        if (end == input.get(0).length() - 1) return null;
+        int symbolIndex = end + 1;
+        char c = input.get(lineIndex).charAt(symbolIndex);
+        if (c != '.') {
+            return new Symbol(c, lineIndex, symbolIndex);
+        }
+        return null;
     }
 
-    private boolean hasSymbolTopAndDiagonal(int lineIndex, int start, int end) {
-        if (lineIndex == 0) return false;
+    private Symbol symbolLeft(int lineIndex, int start) {
+        if (start == 0) return null;
+        int symbolIndex = start - 1;
+        char c = input.get(lineIndex).charAt(symbolIndex);
+        if (c != '.') {
+            return new Symbol(c, lineIndex, symbolIndex);
+        }
+        return null;
+    }
+
+    private Symbol hasSymbolTopAndDiagonal(int lineIndex, int start, int end) {
+        if (lineIndex == 0) return null;
         String lineAbove = input.get(lineIndex - 1);
         for (int i = Math.max(0, start - 1); i <= Math.min(lineAbove.length() - 1, end + 1); i++) {
-            if (lineAbove.charAt(i) != '.') return true;
+            char c = lineAbove.charAt(i);
+            if (c != '.') {
+                return new Symbol(c, lineIndex - 1, i);
+            }
         }
-        return false;
+        return null;
     }
 
-    private boolean hasSymbolBottomAndDiagonal(int lineIndex, int start, int end) {
-        if (lineIndex == input.size() - 1) return false;
+    private Symbol hasSymbolBottomAndDiagonal(int lineIndex, int start, int end) {
+        if (lineIndex == input.size() - 1) return null;
         String lineBelow = input.get(lineIndex + 1);
         for (int i = Math.max(0, start - 1); i <= Math.min(lineBelow.length() - 1, end + 1); i++) {
-            if (lineBelow.charAt(i) != '.') return true;
+            char c = lineBelow.charAt(i);
+            if (c != '.') {
+                return new Symbol(c, lineIndex + 1, i);
+            }
         }
-        return false;
+        return null;
     }
 
     private int buildDigit(String line, int start, int end) {
@@ -91,4 +138,10 @@ public class DayThree implements AocSolver {
         }
         return Integer.parseInt(digitBuilder.toString());
     }
+}
+
+record Number(int value, int rowIndex, int start, int end) {
+}
+
+record Symbol(char value, int rowIndex, int colIndex) {
 }
