@@ -1,8 +1,8 @@
 package karsch.lukas;
 
-import karsch.lukas.d02.DayTwo;
-import karsch.lukas.d03.DayThree;
-import karsch.lukas.d04.DayFour;
+import karsch.lukas.solutions.DayFour;
+import karsch.lukas.solutions.DayThree;
+import karsch.lukas.solutions.DayTwo;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

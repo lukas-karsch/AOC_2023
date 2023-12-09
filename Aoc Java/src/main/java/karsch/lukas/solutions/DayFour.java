@@ -1,4 +1,4 @@
-package karsch.lukas.d04;
+package karsch.lukas.solutions;
 
 import karsch.lukas.AocSolver;
 
