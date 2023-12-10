@@ -5,7 +5,6 @@ import karsch.lukas.AocSolver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -29,17 +28,17 @@ public class DayFive implements AocSolver {
                 .forEach(i -> {
                     var currentMappings = getMappings(i);
                     for (int s = 0; s < seedMapping.size(); s++) {
-                        for (int m = 0; m < currentMappings.size(); m++) {
+                        for (Mapping currentMapping : currentMappings) {
                             long curr = seedMapping.get(s);
                             long newValue = getNewValueForMapping(
                                     curr,
-                                    currentMappings.get(m));
+                                    currentMapping);
                             seedMapping.set(s, newValue);
-                            if(curr != newValue) break; //is this assumption valid?
+                            if (curr != newValue) break;
                         }
                     }
                 });
-        long min = seedMapping.stream().reduce(Math::min).get();
+        long min = seedMapping.stream().reduce(Math::min).orElseThrow(); //always present
         System.out.println("Minimum location: " + min);
     }
 
