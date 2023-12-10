@@ -30,6 +30,7 @@ public class AocRunner {
             case 4 -> new DayFour(input);
             case 5 -> new DayFive(input);
             case 6 -> new DaySix(input);
+            case 7 -> new DaySeven(input);
             default -> throw new IllegalArgumentException("Day " + day + " not implemented");
         };
     }
