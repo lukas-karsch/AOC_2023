@@ -1,5 +1,6 @@
 package karsch.lukas;
 
+import karsch.lukas.solutions.DayFive;
 import karsch.lukas.solutions.DayFour;
 import karsch.lukas.solutions.DayThree;
 import karsch.lukas.solutions.DayTwo;
@@ -30,6 +31,7 @@ public class AocRunner {
             case 2 -> new DayTwo(input);
             case 3 -> new DayThree(input);
             case 4 -> new DayFour(input);
+            case 5 -> new DayFive(input);
             default -> throw new IllegalArgumentException("Day " + day + " not implemented");
         };
     }
