@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class DayFive implements AocSolver {
+    //part 2: 44 436 703 seeds
     private final List<String> input;
 
     public DayFive(Stream<String> input) {
@@ -28,11 +29,9 @@ public class DayFive implements AocSolver {
                 .forEach(i -> {
                     var currentMappings = getMappings(i);
                     for (int s = 0; s < seedMapping.size(); s++) {
-                        for (Mapping currentMapping : currentMappings) {
+                        for (final Mapping currentMapping : currentMappings) {
                             long curr = seedMapping.get(s);
-                            long newValue = getNewValueForMapping(
-                                    curr,
-                                    currentMapping);
+                            long newValue = getNewValueForMapping(curr, currentMapping);
                             seedMapping.set(s, newValue);
                             if (curr != newValue) break;
                         }
@@ -40,6 +39,7 @@ public class DayFive implements AocSolver {
                 });
         long min = seedMapping.stream().reduce(Math::min).orElseThrow(); //always present
         System.out.println("Minimum location: " + min);
+        throw new RuntimeException("Part 2 not implemented");
     }
 
     private long getNewValueForMapping(long currentValue, Mapping mapping) {
